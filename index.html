@@ -67,7 +67,7 @@
 	separator.value = ", "
 	
 	
-	
+	let current = null;
 	function addResultTag(text) {
 		for (let c of  result.children) {
 			if( c.innerHTML == text) 
@@ -76,7 +76,7 @@
 		let li = document.createElement("li");
 		li.innerHTML = text;
 		li.draggable = true;
-		let current = li;
+		
 		li.ondragstart = (ev) => {
 			current = li;
 		  for (let c of  result.children) 
@@ -163,7 +163,6 @@
 				tag.classList.add("unselected");
 				tag.innerHTML = word;
 				tag.draggable = true;
-				let current = tag;
 				
 				tag.ondragstart = (ev) => {
 				  current = tag;
