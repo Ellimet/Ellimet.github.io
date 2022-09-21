@@ -66,58 +66,59 @@
 	random_count_input.value = 5;
 	separator.value = ", "
 	
-	let current = null;
+	
 	
 	function addResultTag(text) {
-		let items = result.getElementsByTagName("li");
-		for (let it of  items) {
-			if( it.innerHTML == text) 
+		for (let c of  result.children) {
+			if( c.innerHTML == text) 
 			return;	 
 		 };
-		let i = document.createElement("li");
-		i.innerHTML = text;
-		result.appendChild(i);
-		i.draggable = true;
-		i.ondragstart = (ev) => {
-		  current = i;
-		  for (let it of  result.getElementsByTagName("li")) {
-			if (it != current) { it.classList.add("hint"); }
-		  }
+		let li = document.createElement("li");
+		li.innerHTML = text;
+		li.draggable = true;
+		let current = li;
+		li.ondragstart = (ev) => {
+			current = li;
+		  for (let c of  result.children) 
+			if (c != current) 
+				c.classList.add("hint"); 
+		  
 		};
-		i.ondragenter = (ev) => {
-		  if (i != current) { i.classList.add("active"); }
+		result.appendChild(li);
+		li.ondragenter = (ev) => {
+		  if (li != current) { li.classList.add("active"); }
 		};
-		i.ondragleave = () => {
-		  i.classList.remove("active");
+		li.ondragleave = () => {
+		  li.classList.remove("active");
 		};
-		i.ondragend = () => { for (let it of items) {
-			it.classList.remove("hint");
-			it.classList.remove("active");
+		li.ondragend = () => { for (let c of result.children) {
+			c.classList.remove("hint");
+			c.classList.remove("active");
 		}};
-		i.ondragover = (evt) => { evt.preventDefault(); };
-		i.ondrop = (evt) => {
+		li.ondragover = (evt) => { evt.preventDefault(); };
+		li.ondrop = (evt) => {
 		  evt.preventDefault();
-		  if (i != current) {
+		  if (li != current) {
 			let currentpos = 0, droppedpos = 0;
-			for (let it=0; it<items.length; it++) {
-			  if (current == items[it]) { currentpos = it; }
-			  if (i == items[it]) { droppedpos = it; }
+			for (let i=0; i < result.children.length; i++) {
+			  if (current == result.children[i]) { currentpos = i; }
+			  if (li == result.children[i]) { droppedpos = i; }
 			}
 			if (currentpos < droppedpos) {
-			  i.parentNode.insertBefore(current, i.nextSibling);
+			  li.parentNode.insertBefore(current, li.nextSibling);
 			} else {
-			  i.parentNode.insertBefore(current, i);
+			  li.parentNode.insertBefore(current, li);
 			}
 		  }
 		};
-		i.onclick = () => {
+		li.onclick = () => {
 			for (let word of  wordbank.children) {
-				if( word.innerHTML == i.innerHTML) {
+				if( word.innerHTML == li.innerHTML) {
 					word.classList.remove("selected");
 					word.classList.add("unselected");
 					break;	 
 				}
-				i.remove();
+				li.remove();
 			}
 		};
   
@@ -161,11 +162,12 @@
 				tag.classList.add("word");
 				tag.classList.add("unselected");
 				tag.innerHTML = word;
-
 				tag.draggable = true;
+				let current = tag;
+				
 				tag.ondragstart = (ev) => {
 				  current = tag;
-				  for (let it of  wordbank.getElementsByTagName("li")) {
+				  for (let it of  wordbank.children) {
 					if (it != current) { it.classList.add("hint"); }
 				  }
 				};
@@ -184,9 +186,9 @@
 				  evt.preventDefault();
 				  if (tag != current) {
 					let currentpos = 0, droppedpos = 0;
-					for (let it=0; it<wordbank.children.length; it++) {
-					  if (current == wordbank.children[it]) { currentpos = it; }
-					  if (tag == wordbank.children[it]) { droppedpos = it; }
+					for (let i=0; i<wordbank.children.length; i++) {
+					  if (current == wordbank.children[i]) { currentpos = i; }
+					  if (tag == wordbank.children[i]) { droppedpos = i; }
 					}
 					if (currentpos < droppedpos) {
 					  tag.parentNode.insertBefore(current, tag.nextSibling);
