@@ -1,0 +1,66 @@
+a,
+a:link,
+a:visited,
+a:hover,
+a:active{
+    text-decoration: none;
+}
+ h1 , h2, h3{
+	 text-decoration: none;
+	 color:#FF66AA;
+	 font-family: Monda;
+	
+}
+
+body, h1, h2, h3, p, a {
+	background-color: #232527;
+}
+
+h1 {
+    margin-left: 20px;
+}
+
+.word { 
+	padding: 10px;
+	font-size: 30px;
+	cursor: pointer; 
+}
+.unselected {
+	color:  #FFFFFF;
+}
+.selected {
+	color:  #555555;
+}
+button {
+	cursor: pointer; 
+}
+
+input {
+	padding: 10px;
+	font-size: 20px;
+	color: #000000;
+	background-color: #AAAAAA;
+}
+
+#separator[type="text"]::first-line  {
+    background-color: gold;
+}
+
+ul {
+	list-style-type: none;
+}
+li {
+
+	font-size: 40px;
+	padding: 10px;
+	color: #FFFFFF;
+}
+
+ li.hint {
+  border: 2px solid #ffc49a;
+  background: #4e4f24;
+}
+ li.active {
+  border: 2px solid #ffa5a5;
+  background: #8e0047;
+}

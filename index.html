@@ -1,0 +1,290 @@
+
+<html>
+
+
+<head>
+    <meta charset="utf-8">
+    <title>WordTool</title>
+    <link href="https://fonts.googleapis.com/css?family=Monda" rel="stylesheet">
+    <link rel="stylesheet" href="WordTool.css">
+</head>
+
+
+<body>
+<div style="padding:30px">
+	   <div id="tools" ></div>
+	   <div id="toptools" style="display:flex" > 
+
+			<div id="inputpart">
+				<h2 for="fname">Add word</h2>
+				<input id="input" style= "text-align:center; margin-right:20px; height:30px; width: 200px" type="text" id="fname" name="fname">
+				<p class="note" style="color:#666666">Note: Can add multiple words if separated by set separator.</p>
+			</div>
+			<div id="resultfield">
+
+				<h2 for="fname">Separator:</h2>
+				<input id="separator" style= "text-align:center;  margin-right:20px; height:30px; width: 100px" type="text" id="fname" name="fname">
+			</div>
+		</div>
+		<div id="bankfield" style="display:flex">
+			<h1>Word Bank</h1>
+			<button id="copybank"  style="background-color:#AA6633; margin:10px; padding:10px; font-size: 20px; height: 40px">copy</button>
+			<button id="clearbank"  style="background-color:#DD2266; margin:10px; padding:10px; font-size: 20px; height: 40px">clear</button>
+		</div>
+		<ul id="wordbank" style="margin:10px; display:flex; flex-wrap: wrap;"> 		</ul>
+		<p class="note"  style="color:#666666;">Note: Drag to sort. Click to append/unappend to String. Right click to remove. </p>
+
+		<div id="resultfield" style="margin:10px; display:flex" > 
+			<h1>String</h1>
+			<button id="copyresult"  style="background-color:#AA6633; margin:10px; padding:10px; font-size: 20px; height: 40px">copy</button>
+			<button id="clearresult"  style="background-color:#DD2266; margin:10px; padding:10px; font-size: 20px; height: 40px">clear</button>
+			<div id="randomtools" style="display:flex">
+				<h3>Pick randomly:</h3>
+				<input id="random_count_input" style= "text-align:center; margin:10px; font-size:20px; height:20px; width: 60px" type="number"  min="1" id="fname" name="fname">
+				<button id="createrandom"  style="background-color:#6622DD; margin:10px; padding:10px; font-size: 20px; height: 40px">create & copy</button>
+			</div>
+		</div>
+		<ul id="result" style="margin:10px; display:flex; flex-wrap: wrap;">
+		</ul>
+		<p  class="note"  style="color:#666666;">Note: Drag to sort. Click to unappend.</p>
+
+		
+		<div id="endingtools" style="display:block">
+			<h3>Start with (optional):</h3>
+			<input id="startinginput" style= "text-align:center; margin:5px; font-size:20px; height:10px; width:90%" type="text" id="fname" name="fname">
+			<h3>End with (optional):</h3>
+			<input id="endinginput" style= "text-align:center; margin:5px; font-size:20px; height:10px; width:90%" type="text" id="fname" name="fname">
+		</div>
+</body>
+
+<script>
+	const wordbank = document.getElementById("wordbank");
+	const input = document.getElementById("input");
+	const separator = document.getElementById("separator");
+	const result = document.getElementById("result");
+	const randomcountinput = document.getElementById("random_count_input");
+	random_count_input.value = 5;
+	separator.value = ", "
+	
+	let current = null;
+	
+	function addResultTag(text) {
+		let items = result.getElementsByTagName("li");
+		for (let it of  items) {
+			if( it.innerHTML == text) 
+			return;	 
+		 };
+		let i = document.createElement("li");
+		i.innerHTML = text;
+		result.appendChild(i);
+		i.draggable = true;
+		i.ondragstart = (ev) => {
+		  current = i;
+		  for (let it of  result.getElementsByTagName("li")) {
+			if (it != current) { it.classList.add("hint"); }
+		  }
+		};
+		i.ondragenter = (ev) => {
+		  if (i != current) { i.classList.add("active"); }
+		};
+		i.ondragleave = () => {
+		  i.classList.remove("active");
+		};
+		i.ondragend = () => { for (let it of items) {
+			it.classList.remove("hint");
+			it.classList.remove("active");
+		}};
+		i.ondragover = (evt) => { evt.preventDefault(); };
+		i.ondrop = (evt) => {
+		  evt.preventDefault();
+		  if (i != current) {
+			let currentpos = 0, droppedpos = 0;
+			for (let it=0; it<items.length; it++) {
+			  if (current == items[it]) { currentpos = it; }
+			  if (i == items[it]) { droppedpos = it; }
+			}
+			if (currentpos < droppedpos) {
+			  i.parentNode.insertBefore(current, i.nextSibling);
+			} else {
+			  i.parentNode.insertBefore(current, i);
+			}
+		  }
+		};
+		i.onclick = () => {
+			for (let word of  wordbank.children) {
+				if( word.innerHTML == i.innerHTML) {
+					word.classList.remove("selected");
+					word.classList.add("unselected");
+					break;	 
+				}
+				i.remove();
+			}
+		};
+  
+	};
+	function removeResultTag(text) {
+		for (let it of  result.getElementsByTagName("li")) {
+			if( it.innerHTML == text) {
+				it.remove();
+				return;	 
+			}
+
+		 };
+	}
+		 
+		function clickTag(tag) {
+			if (tag.classList.contains("unselected")) {						
+				tag.classList.remove("unselected");
+				tag.classList.add("selected");
+				addResultTag(tag.innerHTML);
+			} else {
+				tag.classList.remove("selected");
+				tag.classList.add("unselected");
+				removeResultTag(tag.innerHTML);
+			};
+		}
+	
+	input.addEventListener("keydown", function(event) {
+		if (event.key === "Enter") {
+			for (let word of input.value.split(separator.value)) {
+				let exists = false;
+				for (let i of wordbank.children) {
+					if (i.innerHTML == word) {
+						exists = true;
+						break;
+					}
+					}
+				if (exists) continue;
+				
+				
+				let tag = document.createElement("li");
+				tag.classList.add("word");
+				tag.classList.add("unselected");
+				tag.innerHTML = word;
+
+				tag.draggable = true;
+				tag.ondragstart = (ev) => {
+				  current = tag;
+				  for (let it of  wordbank.getElementsByTagName("li")) {
+					if (it != current) { it.classList.add("hint"); }
+				  }
+				};
+				tag.ondragenter = (ev) => {
+				  if (tag != current) { tag.classList.add("active"); }
+				};
+				tag.ondragleave = () => {
+				  tag.classList.remove("active");
+				};
+				tag.ondragend = () => { for (let it of wordbank.children) {
+					it.classList.remove("hint");
+					it.classList.remove("active");
+				}};
+				tag.ondragover = (evt) => { evt.preventDefault(); };
+				tag.ondrop = (evt) => {
+				  evt.preventDefault();
+				  if (tag != current) {
+					let currentpos = 0, droppedpos = 0;
+					for (let it=0; it<wordbank.children.length; it++) {
+					  if (current == wordbank.children[it]) { currentpos = it; }
+					  if (tag == wordbank.children[it]) { droppedpos = it; }
+					}
+					if (currentpos < droppedpos) {
+					  tag.parentNode.insertBefore(current, tag.nextSibling);
+					} else {
+					  tag.parentNode.insertBefore(current, tag);
+					}
+				  }
+				};
+
+				tag.onclick = () => { 
+					clickTag(tag);
+				}
+				tag.addEventListener('contextmenu', (event) => {
+					event.preventDefault();
+					removeResultTag(tag.innerHTML);
+					tag.remove();
+				});
+				
+				wordbank.appendChild(tag);
+			}
+
+			input.value = "";
+		}
+   });
+   
+     document.getElementById("copybank").onclick = () => {
+		let resultstring;
+		for (let it of wordbank.children) {
+			if (resultstring) resultstring += separator.value;
+			else resultstring = "";
+			resultstring += it.innerHTML;
+			}
+		navigator.clipboard.writeText(resultstring);
+   };
+   
+   document.getElementById("clearbank").onclick = () => {
+   		let resultstring;
+		for (let it of wordbank.children) {
+			if (resultstring) resultstring += separator.value;
+			else resultstring = "";
+			resultstring += it.innerHTML;
+			}
+		input.value = resultstring;
+		result.innerHTML = "";
+		wordbank.innerHTML = "";
+   };
+   
+   function copyresult() {
+	let resultstring;
+		for (let it of result.children) {
+			if (resultstring) resultstring += separator.value;
+			else resultstring = "";
+			resultstring += it.innerHTML;
+			}
+		if (endinginput.value) 
+			resultstring += separator.value + endinginput.value;
+		
+		if (startinginput.value)  
+			resultstring = startinginput.value + separator.value + resultstring ;
+
+		navigator.clipboard.writeText(resultstring);
+   }
+      document.getElementById("copyresult").onclick = copyresult;
+  
+  function clearResult() {
+  		for(let i of result.children) 
+	 			for (let word of  wordbank.children) {
+				if( word.innerHTML == i.innerHTML) {
+					word.classList.remove("selected");
+					word.classList.add("unselected");
+					break;	 
+				}
+			}
+			
+		result.innerHTML = "";
+  }
+     document.getElementById("clearresult").onclick = clearResult;
+
+  
+
+     document.getElementById("createrandom").onclick = () => {
+		clearResult();
+		let a = wordbank.cloneNode(true);
+		for (var i = a.children.length; i >= 0; i--) {
+			let c = a.children[Math.random() * i | 0];
+			a.appendChild(c);
+			for(let tag of wordbank.children)
+				if (tag.innerHTML == c.innerHTML) {
+					clickTag(tag);
+					break;
+				}
+			if (a.children.length - i >= random_count_input.value - 1) 
+				break;
+		}
+		copyresult();
+   };
+
+</script>
+
+
+</html>
